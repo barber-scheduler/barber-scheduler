@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#fff',
     fontSize: 16,
-    width: "80%",
+    width: 400,
   },
 });
