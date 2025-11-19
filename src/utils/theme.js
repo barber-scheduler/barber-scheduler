@@ -1,5 +1,3 @@
-// src/utils/theme.js
-
 export const theme = {
     colors: {
       background: '#121212',    // Preto Fundo
