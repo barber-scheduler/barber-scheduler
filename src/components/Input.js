@@ -7,6 +7,7 @@ export default function Input({
   onChangeText,
   placeholder,
   secureTextEntry,
+  keyboardType,
 }) {
   return (
     <View style={styles.container}>
@@ -19,6 +20,9 @@ export default function Input({
         placeholder={placeholder}
         placeholderTextColor="#777"
         secureTextEntry={secureTextEntry}
+        keyboardType={keyboardType}
+        autoCapitalize={secureTextEntry ? "none" : "sentences"}
+        autoCorrect={!secureTextEntry}
       />
     </View>
   );
@@ -27,6 +31,7 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 14,
+    width: "80%",
   },
   label: {
     color: '#d4af37',
@@ -42,6 +47,5 @@ const styles = StyleSheet.create({
     padding: 12,
     color: '#fff',
     fontSize: 16,
-    width: 400,
   },
 });
