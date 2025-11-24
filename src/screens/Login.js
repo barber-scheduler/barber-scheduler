@@ -1,27 +1,65 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+// Arquivo: src/screens/Login.js
+import React, { useState } from 'react';
+import { Text, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+
+import Button from "../components/Button"
+import Input from "../components/Input"
 
 export default function Login({ navigation }) {
+
+  const [phone, setPhone] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
+  async function handleLogin() {
+
+    if (phone.replace(/\D/g, "").length !== 11) {
+      setError("Telefone incompleto");
+      return
+    }
+
+    setError("")
+
+    // interação com o backend
+  }
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Entrar</Text>
-      
-      <Button 
-        title="Entrar (Ir para Home)" 
-        onPress={() => navigation.replace('Main')} 
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+
+      <Input
+        label="Telefone"
+        placeholder="DDD + Número"
+        value={phone}
+        onChangeText={setPhone}
+        keyboardType="phone-pad"
+        isPhone
       />
-      
-      <View style={{ marginTop: 20 }}>
-        <Button 
-          title="Criar Conta" 
-          onPress={() => navigation.navigate('Cadastro')} 
-        />
-      </View>
-    </View>
+
+      <Input
+        label="Senha"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={true}
+      />
+
+      <Text>{error}</Text>
+
+      <Button
+        title="Entrar"
+        onPress={handleLogin}
+      />
+
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 }
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 });
