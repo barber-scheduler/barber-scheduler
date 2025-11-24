@@ -31,7 +31,6 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 14,
-    width: "80%",
   },
   label: {
     color: '#d4af37',
