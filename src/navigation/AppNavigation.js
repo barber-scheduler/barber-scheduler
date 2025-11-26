@@ -48,7 +48,7 @@ function AppTabs() {
 export default function AppNavigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Cadastro" screenOptions={{ headerShown: false }}>
         <Stack.Screen 
           name="Login" 
           component={Login} 
