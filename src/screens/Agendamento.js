@@ -49,11 +49,8 @@ export default function Agendamento({ navigation }) {
 
       {/* --- HEADER COM BOTÃO VOLTAR --- */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#FFF" />
-        </TouchableOpacity>
         <Text style={styles.headerTitle}>Novo Agendamento</Text>
-        <View style={{ width: 40 }} /> 
+        <View style={{ width: 60 }} /> 
       </View>
 
       <Text style={styles.subTitle}>Qual serviço você deseja?</Text>

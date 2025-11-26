@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Login from '../screens/Login';
 import Cadastro from '../screens/Cadastro';
 import Home from '../screens/Home';
+import HomeBarber from '../screens/Homebarber'; 
 import MeusAgendamentos from '../screens/MeusAgendamentos';
 import Perfil from '../screens/Perfil';
 import Agendamento from '../screens/Agendamento';
@@ -16,7 +17,7 @@ import Sucesso from '../screens/Sucesso';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AppTabs() {
+function ClientTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -25,15 +26,9 @@ function AppTabs() {
         tabBarInactiveTintColor: 'gray',
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
-
-          if (route.name === 'Início') {
-            iconName = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Meus Agendamentos') {
-            iconName = focused ? 'calendar' : 'calendar-outline';
-          } else if (route.name === 'Perfil') {
-            iconName = focused ? 'person' : 'person-outline';
-          }
-
+          if (route.name === 'Início') iconName = focused ? 'home' : 'home-outline';
+          else if (route.name === 'Meus Agendamentos') iconName = focused ? 'calendar' : 'calendar-outline';
+          else if (route.name === 'Perfil') iconName = focused ? 'person' : 'person-outline';
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
@@ -45,10 +40,35 @@ function AppTabs() {
   );
 }
 
+function BarberTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: '#D4AF37',
+        tabBarInactiveTintColor: 'gray',
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+          if (route.name === 'Dashboard') iconName = focused ? 'stats-chart' : 'stats-chart-outline';
+          else if (route.name === 'Perfil') iconName = focused ? 'person' : 'person-outline';
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+
+      <Tab.Screen name="Dashboard" component={HomeBarber} />
+      <Tab.Screen name="Perfil" component={Perfil} />
+    </Tab.Navigator>
+  );
+}
+
+// --- 3. NAVEGAÇÃO PRINCIPAL ---
 export default function AppNavigation() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
+        
+        {/* Telas de Autenticação */}
         <Stack.Screen 
           name="Login" 
           component={Login} 
@@ -59,11 +79,19 @@ export default function AppNavigation() {
           component={Cadastro} 
           options={{ title: 'Criar Conta' }}
         />
+        
         <Stack.Screen 
-          name="Main" 
-          component={AppTabs} 
+          name="MainClient" 
+          component={ClientTabs} 
           options={{ headerShown: false }} 
         />
+
+        <Stack.Screen 
+          name="MainBarber" 
+          component={BarberTabs} 
+          options={{ headerShown: false }} 
+        />
+
         <Stack.Screen 
           name="Agendamento" 
           component={Agendamento} 

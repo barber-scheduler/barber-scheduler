@@ -1,48 +1,18 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { theme } from '../utils/theme';
-
-// Dados Fakes para o Dashboard
-const AGENDAMENTOS = [
-  { id: '1', cliente: 'João Pedro', servico: 'Corte + Barba', horario: '09:00' },
-  { id: '2', cliente: 'Marcos Silva', servico: 'Corte Simples', horario: '10:00' },
-  { id: '3', cliente: 'Lucas Almeida', servico: 'Sobrancelha', horario: '11:30' },
-  { id: '4', cliente: 'Pedro Sampaio', servico: 'Platinado', horario: '14:00' },
-];
+import { theme } from '../utils/theme'; 
 
 export default function Home({ navigation }) {
 
-
-  const renderItem = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.appointmentCard}
-      onPress={() => console.log("Clicou no agendamento de", item.cliente)}
-    >
- 
-      <View style={styles.appointmentLeft}>
-        <View style={styles.iconContainer}>
-          <Ionicons name="time-outline" size={20} color={theme.colors.primary} />
-        </View>
-        <View>
-          <Text style={styles.clientName}>{item.cliente}</Text>
-          <Text style={styles.serviceName}>{item.servico}</Text>
-        </View>
-      </View>
-
-      <Text style={styles.timeText}>{item.horario}</Text>
-    </TouchableOpacity>
-  );
-
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
 
-      {/* --- 1. CABEÇALHO --- */}
       <View style={styles.headerContainer}>
         <View>
-          <Text style={styles.title}>Dashboard</Text>
-          <Text style={styles.date}>Quarta, 20 de Novembro</Text>
+          <Text style={styles.title}>Início</Text>
+          <Text style={styles.date}>Quarta, 26 de Novembro</Text>
         </View>
         
         <TouchableOpacity 
@@ -53,37 +23,38 @@ export default function Home({ navigation }) {
         </TouchableOpacity>
       </View>
 
-    
       <View style={styles.statsContainer}>
-        
-       
         <View style={styles.statCard}>
-           <Text style={styles.statLabel}>Confirmados</Text>
-           <Text style={styles.statNumberYellow}>4</Text>
+           <Text style={styles.statLabel}>Horários disponíveis</Text>
+           <Text style={styles.statNumberYellow}>9</Text>
         </View>
-
         <View style={{ width: 15 }} /> 
-
-        
-        <View style={styles.statCard}>
-           <Text style={styles.statLabel}>Concluídos</Text>
-           <Text style={styles.statNumberWhite}>1</Text>
-        </View>
-
       </View>
 
     
-      <Text style={styles.sectionTitle}>Agendamentos de Hoje</Text>
+      <Text style={styles.sectionTitle}>Serviços</Text>
 
-      <FlatList
-        data={AGENDAMENTOS}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      <TouchableOpacity style={styles.serviceItem}>
+        <Image style={styles.imgs} source={require('../../assets/degrade.png')}/>
+        <Text style={styles.imgTitle}>Corte Degrade</Text>
+      </TouchableOpacity>
 
-    </View>
+      <TouchableOpacity style={styles.serviceItem}>
+        <Image style={styles.imgs} source={require('../../assets/sobrancelha.png')}/>
+        <Text style={styles.imgTitle}>Sobrancelha</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.serviceItem}>
+        <Image style={styles.imgs} source={require('../../assets/barba.png')}/>
+        <Text style={styles.imgTitle}>Barba Completa</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.serviceItem}>
+        <Image style={styles.imgs} source={require('../../assets/corte barba.png')}/>
+        <Text style={styles.imgTitle}>Apenas Corte</Text>
+      </TouchableOpacity>
+
+    </ScrollView>
   );
 }
 
@@ -94,8 +65,6 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingTop: 50,
   },
-  
-  // Cabeçalho
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -120,8 +89,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
-  // Estatísticas
   statsContainer: {
     flexDirection: 'row',
     marginBottom: 30,
@@ -144,53 +111,33 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
   },
-  statNumberWhite: {
-    color: theme.colors.textPrimary,
-    fontSize: 28,
-    fontWeight: 'bold',
-  },
-
-  // Lista
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.textPrimary,
     marginBottom: 15,
   },
-  appointmentCard: {
-    backgroundColor: theme.colors.surface,
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
+  serviceItem: {
+    flexDirection: 'row',      
+    alignItems: 'center',     
+    backgroundColor: theme.colors.surface, 
+    marginBottom: 15,          
+    borderRadius: 12,          
+    padding: 10,            
   },
-  appointmentLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  imgs: {
+    width: 70,                 
+    height: 70,
+    borderRadius: 35,          
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
   },
-  iconContainer: {
-    backgroundColor: 'rgba(255, 215, 0, 0.1)', 
-    padding: 10,
-    borderRadius: 12,
-    marginRight: 15,
-  },
-  clientName: {
-    fontSize: 16,
+
+  imgTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.textPrimary,
+    marginLeft: 15,          
   },
-  serviceName: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-  },
-  timeText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-  }
 });
