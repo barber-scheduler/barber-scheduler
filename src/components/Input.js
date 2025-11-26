@@ -10,7 +10,6 @@ export default function Input({
   secureTextEntry,
   keyboardType,
   isPhone = false,
-  isLettersOnly = false,
 }) {
   return (
     <View style={styles.container}>
