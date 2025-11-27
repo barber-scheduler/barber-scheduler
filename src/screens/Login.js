@@ -84,6 +84,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   error: {
-    color: "#FFFFFF",
+    color: "#FFFF",
   },
 });
