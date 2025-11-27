@@ -49,7 +49,7 @@ export default function Input({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 14,
+    marginBottom: 5,
     width: "80%",
   },
   label: {
