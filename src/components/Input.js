@@ -50,7 +50,7 @@ export default function Input({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 5,
-    width: "80%",
+    width: "70%",
   },
   label: {
     color: '#d4af37',
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
     borderRadius: 10,
-    padding: 12,
+    padding: 9,
     color: '#fff',
     fontSize: 16,
   },

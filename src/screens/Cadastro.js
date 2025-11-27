@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 
 import {
+  Image,
   View,
   Text,
   StyleSheet,
-  TouchableWithoutFeedback,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
@@ -55,6 +55,11 @@ export default function Cadastro({ navigation }) {
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView onPress={Keyboard.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <View style={styles.inner}>
+
+          <Image
+            source={require("../../assets/logo.png")}
+            style={{ width: 230, height: 230, marginTop: 7, }}
+          />
 
           <Input
             label="Nome completo"
