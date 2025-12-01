@@ -67,7 +67,7 @@ function BarberTabs() {
 export default function AppNavigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Cadastro">
+      <Stack.Navigator initialRouteName="Calendario">
         {/* Telas de Autenticação */}
         <Stack.Screen
           name="Login"
