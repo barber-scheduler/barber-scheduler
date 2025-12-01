@@ -12,11 +12,11 @@ export default function Button({ title, onPress, style }) {
 const styles = StyleSheet.create({
   button: {
     backgroundColor: '#d4af37',
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 10,
-    width: "80%",
+    marginTop: 12,
+    width: "70%",
   },
   text: {
     color: '#000',
