@@ -24,12 +24,11 @@ function ClientTabs() {
         headerShown: false,
         tabBarActiveTintColor: "#D4AF37", // Dourado
         tabBarInactiveTintColor: "gray",
-        // ADICIONE ISSO AQUI:
         tabBarStyle: {
-          backgroundColor: "#1E1E1E", 
-          borderTopColor: "#333", 
-          paddingBottom: 5, 
-          height: 60, 
+          backgroundColor: "#1E1E1E",
+          borderTopColor: "#333",
+          paddingBottom: 5,
+          height: 60,
         },
       })}
     >
@@ -67,7 +66,7 @@ function BarberTabs() {
 export default function AppNavigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Calendario">
+      <Stack.Navigator initialRouteName="Login">
         {/* Telas de Autenticação */}
         <Stack.Screen
           name="Login"
@@ -77,7 +76,7 @@ export default function AppNavigation() {
         <Stack.Screen
           name="Cadastro"
           component={Cadastro}
-          options={{ headerShown: false }}
+          options={{ title: "Criar Conta" }}
         />
 
         <Stack.Screen
@@ -95,13 +94,15 @@ export default function AppNavigation() {
         <Stack.Screen
           name="Agendamento"
           component={Agendamento}
-          options={{ headerShown: false }}
+          options={{ title: "Escolher Serviço" }}
         />
+
         <Stack.Screen
           name="Calendario"
           component={Calendario}
-          options={{ headerShown: false }}
+          options={{ title: "Selecionar Horário" }}
         />
+
         <Stack.Screen
           name="Sucesso"
           component={Sucesso}
