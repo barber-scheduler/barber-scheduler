@@ -36,12 +36,15 @@ export default function Login({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView onPress={Keyboard.container} behavior={Platform.OS === "ios" ? "padding" : "height"}>
+      <KeyboardAvoidingView 
+        onPress={Keyboard.container} 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
         <View style={styles.inner}>
 
           <Image
             source={require("../../assets/logo.png")}
-            style={{ width: 230, height: 230, marginTop: 7, }}
+            style={{ width: 230, height: 230, marginTop: 7 }}
           />
 
           <Input
