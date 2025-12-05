@@ -24,12 +24,11 @@ function ClientTabs() {
         headerShown: false,
         tabBarActiveTintColor: "#D4AF37", // Dourado
         tabBarInactiveTintColor: "gray",
-        // ADICIONE ISSO AQUI:
         tabBarStyle: {
-          backgroundColor: "#1E1E1E", 
-          borderTopColor: "#333", 
-          paddingBottom: 5, 
-          height: 60, 
+          backgroundColor: "#1E1E1E",
+          borderTopColor: "#333",
+          paddingBottom: 5,
+          height: 60,
         },
       })}
     >
@@ -97,11 +96,13 @@ export default function AppNavigation() {
           component={Agendamento}
           options={{ title: "Escolher Serviço" }}
         />
+
         <Stack.Screen
           name="Calendario"
           component={Calendario}
           options={{ title: "Selecionar Horário" }}
         />
+
         <Stack.Screen
           name="Sucesso"
           component={Sucesso}

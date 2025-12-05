@@ -1,58 +1,97 @@
-import React from 'react';
-import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
+// Arquivo: src/screens/Login.js
+import React, { useState } from 'react';
 
-export default function Login({ navigation }) { 
+import {
+  Image,
+  View,
+  Text,
+  StyleSheet,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import Button from "../components/Button"
+import Input from "../components/Input"
+
+export default function Login({ navigation }) {
+
+  const [phone, setPhone] = useState("")
+  const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
+  async function handleLogin() {
+
+    if (phone.replace(/\D/g, "").length !== 11) {
+      setError("Telefone incompleto");
+      return
+    }
+
+    setError("")
+
+    // interação com o backend
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Simulação de Login</Text>
-      
-      <View style={styles.buttonContainer}>
-        <Button 
-          title="Entrar como CLIENTE" 
-          color="#2196F3" // Azul
-          onPress={() => navigation.replace('MainClient')} 
-        />
-      </View>
-      
-      <View style={styles.buttonContainer}>
-        <Button 
-          title="Entrar como BARBEIRO" 
-          color="#D4AF37" // Dourado
-          onPress={() => navigation.replace('MainBarber')} 
-        />
-      </View>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView 
+        onPress={Keyboard.container} 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+      >
+        <View style={styles.inner}>
 
-      <View style={styles.footer}>
-        <Button 
-          title="Criar Nova Conta" 
-          color="gray"
-          onPress={() => navigation.navigate('Cadastro')} 
-        />
-      </View>
-    </View>
+          <Image
+            source={require("../../assets/logo.png")}
+            style={{ width: 230, height: 230, marginTop: 7 }}
+          />
+
+          <Input
+            label="Telefone"
+            placeholder="DDD + Número"
+            value={phone}
+            onChangeText={setPhone}
+            keyboardType="phone-pad"
+            isPhone
+          />
+
+          <Input
+            label="Senha"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={true}
+          />
+
+          <Text style={styles.error}>{error}</Text>
+
+          <Button
+            title="Entrar"
+            onPress={handleLogin}
+          />
+
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    backgroundColor: '#fff',
-    padding: 20
+  safe: {
+    flex: 1,
+    backgroundColor: "#121212",
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 40 
+  container: {
+    flex: 1,
+    backgroundColor: "#121212"
   },
-  buttonContainer: {
-    width: '100%',
-    marginBottom: 20,
+  inner: {
+    flex: 1,
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
   },
-  footer: {
-    marginTop: 40,
-    width: '100%'
-  }
+  error: {
+    color: "#FFFF",
+  },
 });

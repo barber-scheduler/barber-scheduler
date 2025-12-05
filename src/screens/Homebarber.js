@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, StatusBar, FlatList, TouchableOpacity } from 'r
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 
-// Dados Fakes para o Dashboard
+// Dados Fake para o Dashboard
 const AGENDAMENTOS = [
   { id: '1', cliente: 'João Pedro', servico: 'Corte + Barba', horario: '09:00' },
   { id: '2', cliente: 'Marcos Silva', servico: 'Corte Simples', horario: '10:00' },
@@ -11,15 +11,13 @@ const AGENDAMENTOS = [
   { id: '4', cliente: 'Pedro Sampaio', servico: 'Platinado', horario: '14:00' },
 ];
 
-export default function Homebarber({ navigation }) {
-
+export default function HomeBarber({ navigation }) {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity 
       style={styles.appointmentCard}
       onPress={() => console.log("Clicou no agendamento de", item.cliente)}
     >
- 
       <View style={styles.appointmentLeft}>
         <View style={styles.iconContainer}>
           <Ionicons name="time-outline" size={20} color={theme.colors.primary} />
@@ -49,30 +47,26 @@ export default function Homebarber({ navigation }) {
           style={styles.addButton}
           onPress={() => navigation.navigate('Agendamento')} 
         >
-           <Ionicons name="add" size={24} color="#000" />
+          <Ionicons name="add" size={24} color="#000" />
         </TouchableOpacity>
       </View>
 
-    
+      {/* Estatísticas */}
       <View style={styles.statsContainer}>
-        
-       
         <View style={styles.statCard}>
-           <Text style={styles.statLabel}>Confirmados</Text>
-           <Text style={styles.statNumberYellow}>4</Text>
+          <Text style={styles.statLabel}>Confirmados</Text>
+          <Text style={styles.statNumberYellow}>4</Text>
         </View>
 
         <View style={{ width: 15 }} /> 
 
-        
         <View style={styles.statCard}>
-           <Text style={styles.statLabel}>Concluídos</Text>
-           <Text style={styles.statNumberWhite}>1</Text>
+          <Text style={styles.statLabel}>Concluídos</Text>
+          <Text style={styles.statNumberWhite}>1</Text>
         </View>
-
       </View>
 
-    
+      {/* Lista */}
       <Text style={styles.sectionTitle}>Agendamentos de Hoje</Text>
 
       <FlatList
@@ -82,7 +76,6 @@ export default function Homebarber({ navigation }) {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: 20 }}
       />
-
     </View>
   );
 }
