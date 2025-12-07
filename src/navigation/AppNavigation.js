@@ -34,7 +34,8 @@ function ClientTabs() {
         },
       })}
     >
-      <Tab.Screen name="Início" component={Home} />
+      <Tab.Screen 
+        name="Início" component={Home} options={{tabBarLabel: "Início", title: "Início",}}/>
       <Tab.Screen name="Meus Agendamentos" component={MeusAgendamentos} />
       <Tab.Screen name="Perfil" component={Perfil} />
     </Tab.Navigator>
@@ -96,13 +97,13 @@ export default function AppNavigation() {
         <Stack.Screen
           name="Agendamento"
           component={Agendamento}
-          options={{ title: "Escolher Serviço" }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="Calendario"
           component={Calendario}
-          options={{ title: "Selecionar Horário" }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
