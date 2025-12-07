@@ -11,37 +11,58 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme'; 
+import { useAuth } from '../contexts/AuthContext';
 
-// Componente auxiliar para os botões do menu
-const ProfileOption = ({ icon, title, subtitle, onPress, isLogout }) => (
-  <TouchableOpacity 
-    style={[styles.optionCard, isLogout && styles.logoutCard]} 
-    onPress={onPress}
-  >
-    <View style={styles.optionIconContainer}>
+// Componente auxiliar para os botões do menu (mais seguro)
+const ProfileOption = ({ icon, title, subtitle, onPress, isLogout }) => {
+  const safeTitle = String(title ?? '');
+
+  const safeSubtitle =
+    typeof subtitle === 'string' && subtitle.trim().length > 0
+      ? subtitle
+      : null;
+
+  return (
+    <TouchableOpacity 
+      style={[styles.optionCard, isLogout && styles.logoutCard]} 
+      onPress={onPress}
+    >
+      <View style={styles.optionIconContainer}>
+        <Ionicons 
+          name={icon} 
+          size={22} 
+          color={isLogout ? '#FF453A' : theme.colors.primary} 
+        />
+      </View>
+
+      <View style={styles.optionTextContainer}>
+        <Text style={[styles.optionTitle, isLogout && styles.logoutText]}>
+          {safeTitle}
+        </Text>
+
+        {!!safeSubtitle && (
+          <Text style={styles.optionSubtitle}>{safeSubtitle}</Text>
+        )}
+      </View>
+
       <Ionicons 
-        name={icon} 
-        size={22} 
-        color={isLogout ? '#FF453A' : theme.colors.primary} 
+        name="chevron-forward" 
+        size={20} 
+        color={isLogout ? '#FF453A' : '#666'} 
       />
-    </View>
-    <View style={styles.optionTextContainer}>
-      <Text style={[styles.optionTitle, isLogout && styles.logoutText]}>{title}</Text>
-      {subtitle && <Text style={styles.optionSubtitle}>{subtitle}</Text>}
-    </View>
-    <Ionicons 
-      name="chevron-forward" 
-      size={20} 
-      color={isLogout ? '#FF453A' : '#666'} 
-    />
-  </TouchableOpacity>
-);
+    </TouchableOpacity>
+  );
+};
 
 export default function Perfil({ navigation }) {
+  const { user, signOut } = useAuth();
 
   // Função para dar feedback visual nos botões em desenvolvimento
   const handlePlaceholderClick = (titulo) => {
-    Alert.alert("Em Desenvolvimento", `Você clicou em "${titulo}". Em breve esta tela estará disponível!`);
+    Alert.alert(
+      "Em Desenvolvimento", 
+      `Você clicou em "${titulo}". Em breve esta tela estará disponível!`
+    );
   };
 
   const handleLogout = () => {
@@ -53,15 +74,32 @@ export default function Perfil({ navigation }) {
         { 
           text: "Sair", 
           style: "destructive",
-          onPress: () => {
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
+          onPress: async () => {
+            try {
+              await signOut(); // limpa usuário (contexto + AsyncStorage)
+
+              // tenta resetar para Login (fluxo ideal)
+              try {
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'Login' }],
+                });
+              } catch (e) {
+                // fallback caso Login não esteja no navigator atual
+                navigation.replace('Login');
+              }
+            } catch (err) {
+              console.log("Erro ao deslogar:", err);
+              Alert.alert("Erro", "Não foi possível sair da conta.");
+            }
           }
         }
       ]
     );
+  };
+
+  const handleOpenDadosPessoais = () => {
+    navigation.navigate('DadosPessoais');
   };
 
   return (
@@ -71,42 +109,46 @@ export default function Perfil({ navigation }) {
       {/* --- 1. CABEÇALHO DO PERFIL --- */}
       <View style={styles.header}>
         <View style={styles.imageContainer}>
-            {/* Foto de perfil (Placeholder) */}
-            <Image 
-                source={require('../../assets/degrade.png')} 
-                style={styles.profileImage}
-            />
-            <View style={styles.editIconBadge}>
-                <Ionicons name="pencil" size={12} color="#000" />
-            </View>
+          {/* Foto de perfil (Placeholder) */}
+          <Image 
+            source={require('../../assets/degrade.png')} 
+            style={styles.profileImage}
+          />
+          <View style={styles.editIconBadge}>
+            <Ionicons name="pencil" size={12} color="#000" />
+          </View>
         </View>
         
-        <Text style={styles.userName}>Gustavo Silva</Text>
-        <Text style={styles.userEmail}>gustavo@email.com</Text>
+        <Text style={styles.userName}>
+          {user?.full_name || 'Usuário'}
+        </Text>
+        <Text style={styles.userEmail}>
+          {user?.email || 'email@exemplo.com'}
+        </Text>
 
         <TouchableOpacity 
-            style={styles.editButton}
-            onPress={() => handlePlaceholderClick("Editar Perfil")}
+          style={styles.editButton}
+          onPress={() => handlePlaceholderClick("Editar Perfil")}
         >
-            <Text style={styles.editButtonText}>Editar Perfil</Text>
+          <Text style={styles.editButtonText}>Editar Perfil</Text>
         </TouchableOpacity>
       </View>
 
       {/* --- 2. ESTATÍSTICAS --- */}
       <View style={styles.statsRow}>
         <View style={styles.statItem}>
-            <Text style={styles.statNumber}>12</Text>
-            <Text style={styles.statLabel}>Cortes</Text>
+          <Text style={styles.statNumber}>12</Text>
+          <Text style={styles.statLabel}>Cortes</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.statItem}>
-            <Text style={styles.statNumber}>70</Text>
-            <Text style={styles.statLabel}>Pontos</Text>
+          <Text style={styles.statNumber}>70</Text>
+          <Text style={styles.statLabel}>Pontos</Text>
         </View>
         <View style={styles.divider} />
         <View style={styles.statItem}>
-            <Text style={styles.statNumber}>4.9</Text>
-            <Text style={styles.statLabel}>Nota</Text>
+          <Text style={styles.statNumber}>4.9</Text>
+          <Text style={styles.statLabel}>Nota</Text>
         </View>
       </View>
 
@@ -114,45 +156,40 @@ export default function Perfil({ navigation }) {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Minha Conta</Text>
         
-        {/* Este botão navega de verdade */}
         <ProfileOption 
           icon="calendar-outline" 
           title="Meus Agendamentos" 
-          subtitle="Histórico e futuros"
           onPress={() => navigation.navigate('Meus Agendamentos')}
         />
         
-        {/* Estes mostram Alerta */}
         <ProfileOption 
           icon="person-outline" 
           title="Dados Pessoais" 
-          subtitle="Nome, email, telefone"
-          onPress={() => handlePlaceholderClick("Dados Pessoais")}
+          onPress={handleOpenDadosPessoais}
         />
         <ProfileOption 
           icon="card-outline" 
           title="Pagamentos" 
-          subtitle="Cartões e histórico"
           onPress={() => handlePlaceholderClick("Pagamentos")}
         />
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>App</Text>
+        <Text style={styles.sectionTitle}>Aplicativo</Text>
         
         <ProfileOption 
           icon="notifications-outline" 
-          title="Notificações" 
+          title={"Notificação"}
           onPress={() => handlePlaceholderClick("Notificações")}
         />
         <ProfileOption 
           icon="help-circle-outline" 
-          title="Ajuda e Suporte" 
-          onPress={() => handlePlaceholderClick("Ajuda e Suporte")}
+          title="Central de Ajuda" 
+          onPress={() => handlePlaceholderClick("Central de Ajuda")}
         />
-         <ProfileOption 
+        <ProfileOption 
           icon="settings-outline" 
-          title="Configurações" 
+          title={"Configuração"}
           onPress={() => handlePlaceholderClick("Configurações")}
         />
       </View>

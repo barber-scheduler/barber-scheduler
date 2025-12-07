@@ -13,6 +13,8 @@ import Perfil from "../screens/Perfil";
 import Agendamento from "../screens/Agendamento";
 import Calendario from "../screens/Calendario";
 import Sucesso from "../screens/Sucesso";
+import DadosPessoais from "../screens/DadosPessoais";
+
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -111,6 +113,14 @@ export default function AppNavigation() {
             gestureEnabled: false,
           }}
         />
+
+        <Stack.Screen
+          name="DadosPessoais"
+          component={DadosPessoais}
+          options={{ headerShown: false }}
+        />
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );

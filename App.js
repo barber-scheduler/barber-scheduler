@@ -1,11 +1,13 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-
-import AppNavigation from "./src/navigation/AppNavigation"
+import AppNavigation from "./src/navigation/AppNavigation";
+import { AuthProvider } from "./src/contexts/AuthContext";
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <AppNavigation />
-    </SafeAreaProvider>
-  )
+    <AuthProvider>
+      <SafeAreaProvider>
+        <AppNavigation />
+      </SafeAreaProvider>
+    </AuthProvider>
+  );
 }
