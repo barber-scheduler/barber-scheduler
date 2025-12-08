@@ -1,29 +1,73 @@
 // src/screens/Agendamento.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
   StyleSheet, 
   FlatList, 
   TouchableOpacity, 
-  StatusBar 
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
 
-// Dados Falsos dos Serviços (Depois virão do Banco)
-const SERVICOS = [
-  { id: '1', nome: 'Corte Degrade', preco: 'R$ 35,00', duracao: '40 min', icon: 'cut-outline' },
-  { id: '2', nome: 'Barba Completa', preco: 'R$ 25,00', duracao: '30 min', icon: 'happy-outline' },
-  { id: '3', nome: 'Corte + Barba', preco: 'R$ 50,00', duracao: '1h', icon: 'accessibility-outline' },
-  { id: '4', nome: 'Sobrancelha', preco: 'R$ 15,00', duracao: '15 min', icon: 'eye-outline' },
-  { id: '5', nome: 'Acabamento', preco: 'R$ 10,00', duracao: '10 min', icon: 'brush-outline' },
-];
+// Ajuste esse endereço se estiver rodando em device físico
+const API_URL = 'http://localhost:3333';
+const BARBERSHOP_ID = 1;
 
 export default function Agendamento({ navigation }) {
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Busca serviços do backend
+  useEffect(() => {
+    async function loadServices() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(
+          `${API_URL}/barbershops/${BARBERSHOP_ID}/services`
+        );
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data?.error || 'Erro ao buscar serviços.');
+        }
+
+        // Mapeia para o formato que a tela usa
+        const mapped = (data.services || []).map((s) => ({
+          id: s.id,
+          name: s.name,
+          durationLabel: `${s.duration_min} min`,
+          priceLabel: (s.price_cents / 100).toLocaleString('pt-BR', {
+            style: 'currency',
+            currency: 'BRL',
+          }),
+          icon: 'cut-outline', // depois você pode variar por serviço se quiser
+        }));
+
+        setServices(mapped);
+      } catch (err) {
+        console.log('Erro ao carregar serviços:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadServices();
+  }, []);
 
   const handleSelectService = (servico) => {
-    navigation.navigate('Calendario', { servicoSelecionado: servico });
+    navigation.navigate('Calendario', {
+      servicoSelecionado: {
+        id: servico.id,
+        name: servico.name,
+      },
+    });
   };
 
   const renderServiceCard = ({ item }) => (
@@ -39,13 +83,13 @@ export default function Agendamento({ navigation }) {
 
       {/* Infos do Serviço */}
       <View style={styles.infoContainer}>
-        <Text style={styles.serviceName}>{item.nome}</Text>
-        <Text style={styles.serviceDuration}>{item.duracao}</Text>
+        <Text style={styles.serviceName}>{item.name}</Text>
+        <Text style={styles.serviceDuration}>{item.durationLabel}</Text>
       </View>
 
       {/* Preço e Setinha */}
       <View style={styles.priceContainer}>
-        <Text style={styles.servicePrice}>{item.preco}</Text>
+        <Text style={styles.servicePrice}>{item.priceLabel}</Text>
         <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
       </View>
     </TouchableOpacity>
@@ -72,13 +116,27 @@ export default function Agendamento({ navigation }) {
 
       <Text style={styles.subTitle}>Qual serviço você deseja?</Text>
 
-      <FlatList
-        data={SERVICOS}
-        keyExtractor={(item) => item.id}
-        renderItem={renderServiceCard}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 20 }}
-      />
+      {loading && (
+        <View style={{ marginTop: 20, alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+        </View>
+      )}
+
+      {!loading && error && (
+        <Text style={{ color: 'red', marginTop: 20 }}>
+          {error}
+        </Text>
+      )}
+
+      {!loading && !error && (
+        <FlatList
+          data={services}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={renderServiceCard}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: 20 }}
+        />
+      )}
     </View>
   );
 }
@@ -160,5 +218,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.primary, 
     marginBottom: 4,
-  }
+  },
 });

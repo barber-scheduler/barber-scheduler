@@ -71,32 +71,33 @@ export default function Perfil({ navigation }) {
       "Tem certeza que deseja sair da sua conta?",
       [
         { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Sair", 
+        {
+          text: "Sair",
           style: "destructive",
           onPress: async () => {
             try {
-              await signOut(); // limpa usuário (contexto + AsyncStorage)
+              // limpa usuário (contexto + AsyncStorage)
+              await signOut();
 
-              // tenta resetar para Login (fluxo ideal)
-              try {
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Login' }],
-                });
-              } catch (e) {
-                // fallback caso Login não esteja no navigator atual
-                navigation.replace('Login');
-              }
+              // pegamos o navegador "raiz" (Stack com a rota Login)
+              const parentNav = navigation.getParent?.();
+              const rootNav = parentNav?.getParent?.() ?? parentNav ?? navigation;
+
+              // resetamos para a tela de Login
+              rootNav.reset({
+                index: 0,
+                routes: [{ name: "Login" }],
+              });
             } catch (err) {
               console.log("Erro ao deslogar:", err);
               Alert.alert("Erro", "Não foi possível sair da conta.");
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
+
 
   const handleOpenDadosPessoais = () => {
     navigation.navigate('DadosPessoais');
@@ -159,7 +160,7 @@ export default function Perfil({ navigation }) {
         <ProfileOption 
           icon="calendar-outline" 
           title="Meus Agendamentos" 
-          onPress={() => navigation.navigate('Meus Agendamentos')}
+          onPress={() => navigation.navigate('MeusAgendamentos')}
         />
         
         <ProfileOption 

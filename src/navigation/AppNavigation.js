@@ -32,15 +32,52 @@ function ClientTabs() {
           paddingBottom: 5,
           height: 60,
         },
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName = "ellipse";
+
+          if (route.name === "HomeClient") {
+            iconName = focused ? "home" : "home-outline";
+          } else if (route.name === "MeusAgendamentos") {
+            iconName = focused ? "calendar" : "calendar-outline";
+          } else if (route.name === "Perfil") {
+            iconName = focused ? "person" : "person-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
       })}
     >
-      <Tab.Screen 
-        name="Início" component={Home} options={{tabBarLabel: "Início", title: "Início",}}/>
-      <Tab.Screen name="Meus Agendamentos" component={MeusAgendamentos} />
-      <Tab.Screen name="Perfil" component={Perfil} />
+      {/* Rota interna chamada "HomeClient", label visível "Início" */}
+      <Tab.Screen
+        name="HomeClient"
+        component={Home}
+        options={{
+          tabBarLabel: "Início",
+          title: "Início",
+        }}
+      />
+
+      <Tab.Screen
+        name="MeusAgendamentos"
+        component={MeusAgendamentos}
+        options={{
+          tabBarLabel: "Meus Agendamentos",
+          title: "Meus Agendamentos",
+        }}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={Perfil}
+        options={{
+          tabBarLabel: "Perfil",
+          title: "Perfil",
+        }}
+      />
     </Tab.Navigator>
   );
 }
+
 
 function BarberTabs() {
   return (

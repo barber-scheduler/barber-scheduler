@@ -1,3 +1,4 @@
+// src/screens/Calendario.js
 import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
@@ -7,10 +8,13 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import { useAuth } from '../contexts/AuthContext';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '../utils/theme';
 
 // ⚠️ AJUSTE SE MUDAR O AMBIENTE ⚠️
 // - App Web / iOS Simulator: http://localhost:3333
@@ -21,7 +25,7 @@ const API_URL = 'http://localhost:3333';
 // Horários que o barbeiro trabalha (fixos por enquanto)
 const ALL_SLOTS = [
   '09:00', '10:00', '11:00', '12:00',
-  '14:00', '15:00', '16:00', '17:00'
+  '14:00', '15:00', '16:00', '17:00',
 ];
 
 // Horários já agendados (mock local, depois podemos puxar do back)
@@ -29,8 +33,8 @@ const BOOKED_APPOINTMENTS = {
   '2025-12-05': ['10:00', '14:00', '17:00'],
   '2026-01-10': ['15:00'],
   '2026-02-20': [
-    '09:00','10:00','11:00','12:00',
-    '14:00','15:00','16:00','17:00'
+    '09:00', '10:00', '11:00', '12:00',
+    '14:00', '15:00', '16:00', '17:00',
   ],
 };
 
@@ -56,13 +60,13 @@ export default function Calendario({ route, navigation }) {
   // Filtra horários disponíveis para a data selecionada
   const availableSlots = useMemo(() => {
     const booked = BOOKED_APPOINTMENTS[selectedDate] || [];
-    let slots = ALL_SLOTS.filter(slot => !booked.includes(slot));
+    let slots = ALL_SLOTS.filter((slot) => !booked.includes(slot));
 
     // Se for hoje, remove horários que já passaram
     if (selectedDate === moment().format('YYYY-MM-DD')) {
       const currentTime = moment().format('HH:mm');
-      slots = slots.filter(slot =>
-        moment(slot, 'HH:mm').isAfter(moment(currentTime, 'HH:mm'))
+      slots = slots.filter((slot) =>
+        moment(slot, 'HH:mm').isAfter(moment(currentTime, 'HH:mm')),
       );
     }
 
@@ -95,8 +99,8 @@ export default function Calendario({ route, navigation }) {
       return;
     }
 
-    const clientId = user.id;       // agora usa o cliente logado
-    const professionalId = 1;       // ainda fixo, depois ligamos com barbeiro real
+    const clientId = user.id;      // usa o cliente logado
+    const professionalId = 1;      // ainda fixo, depois liga com barbeiro real
     const serviceId = servicoSelecionado.id;
     const startTime = montarStartTime();
 
@@ -119,7 +123,10 @@ export default function Calendario({ route, navigation }) {
 
       if (!response.ok) {
         console.log('Erro ao criar agendamento:', data);
-        Alert.alert('Erro', data?.error || 'Não foi possível criar o agendamento.');
+        Alert.alert(
+          'Erro',
+          data?.error || 'Não foi possível criar o agendamento.',
+        );
         return;
       }
 
@@ -133,89 +140,138 @@ export default function Calendario({ route, navigation }) {
     }
   }
 
+  // Datas marcadas (selecionada + dias totalmente lotados)
+  const markedDates = {
+    [selectedDate]: { selected: true, selectedColor: theme.colors.primary },
+    ...Object.keys(BOOKED_APPOINTMENTS).reduce((acc, date) => {
+      if (BOOKED_APPOINTMENTS[date].length === ALL_SLOTS.length) {
+        acc[date] = { dotColor: 'red', marked: true };
+      }
+      return acc;
+    }, {}),
+  };
+
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>💈 Selecione a Data</Text>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
 
-      {servicoSelecionado && (
-        <Text style={styles.serviceInfo}>
-          Serviço:{' '}
-          <Text style={{ fontWeight: 'bold' }}>{servicoSelecionado.name}</Text>
-        </Text>
-      )}
+      {/* HEADER COM BOTÃO DE VOLTAR */}
+      <View style={styles.topHeader}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons
+            name="chevron-back"
+            size={20}
+            color={theme.colors.textPrimary}
+          />
+        </TouchableOpacity>
 
-      <Calendar
-        minDate={minDate}
-        maxDate={maxDate}
-        onDayPress={handleDayPress}
-        current={minDate}
-        markedDates={{
-          [selectedDate]: { selected: true, selectedColor: '#007AFF' },
-          ...Object.keys(BOOKED_APPOINTMENTS).reduce((acc, date) => {
-            if (BOOKED_APPOINTMENTS[date].length === ALL_SLOTS.length) {
-              acc[date] = { dotColor: 'red', marked: true };
-            }
-            return acc;
-          }, {})
-        }}
-        theme={{
-          selectedDayBackgroundColor: '#007AFF',
-          todayTextColor: '#222222',
-          arrowColor: '#007AFF',
-        }}
-      />
+        <Text style={styles.headerTitle}>Escolha a data</Text>
 
-      <View style={styles.separator} />
+        {/* Espaço para balancear o layout */}
+        <View style={{ width: 40 }} />
+      </View>
 
-      <Text style={styles.header}>⏰ Horários Disponíveis</Text>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.content}
+      >
+        {/* CARD DO CALENDÁRIO */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}></Text>
 
-      {selectedDate && (
-        <View style={styles.slotsContainer}>
-          {availableSlots.length > 0 ? (
-            availableSlots.map(time => (
-              <TouchableOpacity
-                key={time}
-                style={[
-                  styles.slotButton,
-                  selectedTime === time && styles.slotSelected
-                ]}
-                onPress={() => setSelectedTime(time)}
+          {servicoSelecionado && (
+            <Text style={styles.serviceInfo}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  color: theme.colors.textPrimary,
+                }}
               >
-                <Text
-                  style={[
-                    styles.slotText,
-                    selectedTime === time && styles.slotTextSelected
-                  ]}
-                >
-                  {time}
-                </Text>
-              </TouchableOpacity>
-            ))
-          ) : (
-            <Text style={styles.noSlotsText}>
-              Nenhum horário disponível neste dia.
+                {servicoSelecionado.name}
+              </Text>
             </Text>
           )}
-        </View>
-      )}
 
-      <TouchableOpacity
-        style={[
-          styles.confirmButton,
-          (!selectedDate || !selectedTime || loading) && { opacity: 0.6 }
-        ]}
-        onPress={handleBooking}
-        disabled={!selectedDate || !selectedTime || loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.confirmButtonText}>
-            Agendar: {selectedDate ? moment(selectedDate).format('DD/MM') : 'Selecione a Data'} às {selectedTime || '...'}
-          </Text>
-        )}
-      </TouchableOpacity>
-    </ScrollView>
+          <Calendar
+            minDate={minDate}
+            maxDate={maxDate}
+            onDayPress={handleDayPress}
+            current={minDate}
+            markedDates={markedDates}
+            theme={{
+              calendarBackground: theme.colors.surface,
+              dayTextColor: theme.colors.textPrimary,
+              monthTextColor: theme.colors.textPrimary,
+              textSectionTitleColor: theme.colors.textSecondary,
+              selectedDayBackgroundColor: theme.colors.primary,
+              selectedDayTextColor: '#000',
+              todayTextColor: theme.colors.primary,
+              arrowColor: theme.colors.primary,
+            }}
+          />
+        </View>
+
+        {/* CARD DE HORÁRIOS */}
+        <View style={styles.card}>
+          <Text style={styles.sectionTitle}>⏰ Horários Disponíveis</Text>
+
+          {selectedDate && (
+            <View style={styles.slotsContainer}>
+              {availableSlots.length > 0 ? (
+                availableSlots.map((time) => (
+                  <TouchableOpacity
+                    key={time}
+                    style={[
+                      styles.slotButton,
+                      selectedTime === time && styles.slotSelected,
+                    ]}
+                    onPress={() => setSelectedTime(time)}
+                  >
+                    <Text
+                      style={[
+                        styles.slotText,
+                        selectedTime === time && styles.slotTextSelected,
+                      ]}
+                    >
+                      {time}
+                    </Text>
+                  </TouchableOpacity>
+                ))
+              ) : (
+                <Text style={styles.noSlotsText}>
+                  Nenhum horário disponível neste dia.
+                </Text>
+              )}
+            </View>
+          )}
+        </View>
+
+        {/* BOTÃO DE CONFIRMAR AGENDAMENTO */}
+        <TouchableOpacity
+          style={[
+            styles.confirmButton,
+            (!selectedDate || !selectedTime || loading) && { opacity: 0.6 },
+          ]}
+          onPress={handleBooking}
+          disabled={!selectedDate || !selectedTime || loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.confirmButtonText}>
+              Agendar:{' '}
+              {selectedDate
+                ? moment(selectedDate).format('DD/MM')
+                : 'Selecione a Data'}{' '}
+              às {selectedTime || '...'}
+            </Text>
+          )}
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -223,68 +279,94 @@ export default function Calendario({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
+    padding: 20,
+    paddingTop: 50,
   },
-  header: {
+  topHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: theme.colors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  headerTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
-    color: '#222',
+    color: theme.colors.textPrimary,
+  },
+  content: {
+    paddingBottom: 40,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: theme.colors.textPrimary,
+    marginBottom: 12,
   },
   serviceInfo: {
     fontSize: 14,
-    color: '#444',
-    marginBottom: 10,
+    color: theme.colors.textSecondary,
+    marginBottom: 16,
   },
-  separator: {
-    height: 1,
-    backgroundColor: '#ccc',
-    marginVertical: 20,
+  card: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   slotsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'flex-start',
   },
   slotButton: {
-    backgroundColor: '#fff',
-    padding: 10,
-    borderRadius: 5,
-    margin: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#ddd',
-    minWidth: 80,
-    alignItems: 'center',
+    borderColor: theme.colors.border,
+    marginRight: 10,
+    marginBottom: 10,
+    backgroundColor: theme.colors.surfaceHighlight,
   },
   slotSelected: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   slotText: {
-    color: '#222',
+    color: theme.colors.textPrimary,
     fontWeight: '600',
   },
   slotTextSelected: {
-    color: '#fff',
+    color: '#000',
   },
   noSlotsText: {
-    fontSize: 16,
-    color: '#888',
-    padding: 10,
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    paddingVertical: 10,
   },
   confirmButton: {
-    backgroundColor: '#34C759',
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 30,
-    marginBottom: 50,
+    backgroundColor: theme.colors.success,
+    paddingVertical: 15,
+    borderRadius: theme.borderRadius.lg,
+    marginTop: 8,
+    marginBottom: 24,
     alignItems: 'center',
   },
   confirmButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });

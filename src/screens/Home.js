@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../utils/theme';
+import { useAuth } from '../contexts/AuthContext';
+
 
 const { width } = Dimensions.get('window');
 
@@ -32,10 +34,18 @@ const Banners = ({ navigation }) => {
           </Text>
           <TouchableOpacity 
             style={styles.bannerButton}
-            onPress={() => navigation.navigate('Agendamento')}
+            onPress={() =>
+              navigation.navigate('Calendario', {
+                servicoSelecionado: {
+                  id: 6,                     // ID do Combo Completo no banco
+                  name: 'Combo Completo',
+                },
+              })
+            }
           >
             <Text style={styles.bannerButtonText}>Agendar Agora</Text>
           </TouchableOpacity>
+
         </View>
 
         <Image 
@@ -86,22 +96,58 @@ const LoyaltyCard = () => {
   );
 };
 
+function getFormattedDate() {
+  const hoje = new Date();
+
+  // dia da semana (ex: 'quarta-feira' → 'Quarta')
+  let weekday = hoje.toLocaleDateString('pt-BR', { weekday: 'long' });
+  weekday = weekday.split('-')[0];        // tira o "-feira" se vier
+  weekday = weekday.charAt(0).toUpperCase() + weekday.slice(1);
+
+  const day = hoje.getDate();             // 1–31
+  let month = hoje.toLocaleDateString('pt-BR', { month: 'long' }); // 'novembro'
+  month = month.charAt(0).toUpperCase() + month.slice(1);
+
+  return `${weekday}, ${day} de ${month}`;
+}
+
+function getFirstName(fullName) {
+  if (!fullName) return 'Cliente';
+  return fullName.split(' ')[0]; // pega o primeiro nome
+}
+
+
 export default function Home({ navigation }) {
+
+  const { user } = useAuth();
+
+  const firstName = getFirstName(user?.full_name);
+  const todayLabel = getFormattedDate();
+
+    // Quando o usuário clicar em um serviço da Home,
+  // manda direto para a tela de Calendario com o serviço selecionado
+  const handleServicePress = (service) => {
+    navigation.navigate('Calendario', {
+      servicoSelecionado: service,
+    });
+  };
+
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
 
       <View style={styles.headerContainer}>
         <View>
-          <Text style={styles.greeting}>Olá, Gustavo</Text>
-          <Text style={styles.date}>Quarta, 26 de Novembro</Text>
+          <Text style={styles.greeting}>Olá, {firstName}</Text>
+          <Text style={styles.date}>{todayLabel}</Text>
         </View>
-        
+
         <TouchableOpacity 
           style={styles.addButton}
-          onPress={() => navigation.navigate('Agendamento')} 
+          onPress={() => navigation.navigate('Agendamento')}
         >
-           <Ionicons name="add" size={28} color="#000" />
+          <Ionicons name="add" size={24} color={theme.colors.textPrimary} />
         </TouchableOpacity>
       </View>
 
@@ -112,41 +158,77 @@ export default function Home({ navigation }) {
     
       <Text style={styles.sectionTitle}>Nossos Serviços</Text>
 
-      <TouchableOpacity style={styles.serviceItem}>
+      <TouchableOpacity
+        style={styles.serviceItem}
+        onPress={() =>
+          handleServicePress({
+            id: 1,                  
+            name: 'Corte Degrade',  
+          })
+        }
+      >
         <Image style={styles.imgs} source={require('../../assets/degrade.png')}/>
         <View style={styles.serviceTextContainer}>
-            <Text style={styles.imgTitle}>Corte Degrade</Text>
-            <Text style={styles.servicePrice}>R$ 35,00</Text>
+          <Text style={styles.imgTitle}>Corte Degrade</Text>
+          <Text style={styles.servicePrice}>R$ 35,00</Text>
         </View>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.textSecondary} />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.serviceItem}>
+
+      <TouchableOpacity
+        style={styles.serviceItem}
+        onPress={() =>
+          handleServicePress({
+            id: 3,               
+            name: 'Sobrancelha',
+          })
+        }
+      >
         <Image style={styles.imgs} source={require('../../assets/sobrancelha.png')}/>
         <View style={styles.serviceTextContainer}>
-            <Text style={styles.imgTitle}>Sobrancelha</Text>
-            <Text style={styles.servicePrice}>R$ 15,00</Text>
+          <Text style={styles.imgTitle}>Sobrancelha</Text>
+          <Text style={styles.servicePrice}>R$ 15,00</Text>
         </View>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.textSecondary} />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.serviceItem}>
+
+      <TouchableOpacity
+        style={styles.serviceItem}
+        onPress={() =>
+          handleServicePress({
+            id: 4,                  
+            name: 'Barba Completa',
+          })
+        }
+      >
         <Image style={styles.imgs} source={require('../../assets/barba.png')}/>
         <View style={styles.serviceTextContainer}>
-            <Text style={styles.imgTitle}>Barba Completa</Text>
-            <Text style={styles.servicePrice}>R$ 30,00</Text>
+          <Text style={styles.imgTitle}>Barba Completa</Text>
+          <Text style={styles.servicePrice}>R$ 30,00</Text>
         </View>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.textSecondary} />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.serviceItem}>
+
+      <TouchableOpacity
+        style={styles.serviceItem}
+        onPress={() =>
+          handleServicePress({
+            id: 5,                
+            name: 'Apenas Corte',
+          })
+        }
+      >
         <Image style={styles.imgs} source={require('../../assets/corte barba.png')}/>
         <View style={styles.serviceTextContainer}>
-            <Text style={styles.imgTitle}>Apenas Corte</Text>
-            <Text style={styles.servicePrice}>R$ 30,00</Text>
+          <Text style={styles.imgTitle}>Apenas Corte</Text>
+          <Text style={styles.servicePrice}>R$ 30,00</Text>
         </View>
         <Ionicons name="chevron-forward" size={24} color={theme.colors.textSecondary} />
       </TouchableOpacity>
+
       
       <View style={{ height: 30 }} />
 

@@ -1,4 +1,4 @@
-export const theme = {
+  export const theme = {
     colors: {
       background: '#121212',    // Preto Fundo
       surface: '#1E1E1E',       // Cinza Card
