@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
+import { MaskedTextInput } from "react-native-mask-text";
 
 export default function Input({
   label,
@@ -7,27 +8,49 @@ export default function Input({
   onChangeText,
   placeholder,
   secureTextEntry,
+  keyboardType,
+  isPhone = false,
 }) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
 
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor="#777"
-        secureTextEntry={secureTextEntry}
-      />
+      {isPhone ? (
+
+        <MaskedTextInput
+          mask={"(99) 99999-9999"}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="#777"
+          keyboardType="phone-pad"
+          style={styles.input}
+        />
+
+      ) : (
+
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor="#777"
+          secureTextEntry={secureTextEntry}
+          keyboardType={keyboardType}
+          autoCapitalize={secureTextEntry ? "none" : "sentences"}
+          autoCorrect={!secureTextEntry}
+        />
+        
+      )}
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 14,
-    width: "80%"
+    marginBottom: 5,
+    width: "70%",
   },
   label: {
     color: '#d4af37',
@@ -40,7 +63,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#333',
     borderRadius: 10,
-    padding: 12,
+    padding: 9,
     color: '#fff',
     fontSize: 16,
   },
